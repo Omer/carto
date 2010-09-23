@@ -27,7 +27,7 @@ def self.get_inventory
 end
 
 def self.parse_me(invo)
-	output = "---\n"
+	output = Hash.new
 	invo.elements.each('inventory/node') { |element| 
 		machine_loc = element.elements["location"].text
 		unless machine_loc.nil?
@@ -35,12 +35,12 @@ def self.parse_me(invo)
 				machine_floor = machine_loc[3,1]
 				machine_room = machine_loc[5..-1]
 				machine_name = element.attributes["name"]
-				output << "-\tname:\t#{machine_name}\n\tfloor:\t#{machine_floor}\n\troom:\t#{machine_room}\n"
+				output["#{machine_name}"] = {'floor' => machine_floor, 'room' => machine_room} 
 			end
 		end
 	}
 	open(YAMLNAME, 'w') {|file|
-		file.write(output)
+		file.write(output.to_yaml)
 	}
 	return YAMLNAME
 end
