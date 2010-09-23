@@ -6,7 +6,7 @@ require 'yaml'
 APP_ROOT = File.join(File.dirname(Pathname.new(__FILE__).realpath),'/..')
 LIB_ROOT = APP_ROOT + '/lib'
 
-require LIB_ROOT + '/parser'
+require LIB_ROOT + '/carto'
 
-@data = YAML::load_file( @inventory )
-puts @data['moose']['floor']
+@data = Inventory.instance.inventory
+puts @data["moose"][:floor]

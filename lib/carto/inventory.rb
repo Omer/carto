@@ -39,7 +39,7 @@ class Inventory
         puts ">>> Reacquisition complete."
       end
 
-      parse_xml File.new(PROFILENAME)
+      parse_xml File.new(XML_PATH)
     end
 
     load_yaml
@@ -54,14 +54,16 @@ class Inventory
     output = Hash.new
 
     document.root.each_element('//node') do |machine| 
-      location = machine.elements["location"].text
+      location_node = machine.elements["location"]
 
-      unless location.nil?
-        if location ~= /^AT/
+      unless location_node.nil?
+        location = location_node.text
+
+        if location =~ /^AT/
           floor = location[3]
           room = location[5..-1]
 
-          name = machine.attributes["name"].text
+          name = machine.attributes["name"]
 
           output[name] = {:floor => floor,
                           :room => room} 
