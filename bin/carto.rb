@@ -8,7 +8,5 @@ LIB_ROOT = APP_ROOT + '/lib'
 
 require LIB_ROOT + '/parser'
 
-puts @inventory
 @data = YAML::load_file( @inventory )
-
-puts @data.dump
+puts @data[0][0]

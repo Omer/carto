@@ -27,7 +27,7 @@ def self.get_inventory
 end
 
 def self.parse_me(invo)
-	output = "---\nmachines:\m"
+	output = "---\n"
 	invo.elements.each('inventory/node') { |element| 
 		machine_loc = element.elements["location"].text
 		unless machine_loc.nil?
@@ -35,7 +35,7 @@ def self.parse_me(invo)
 				machine_floor = machine_loc[3,1]
 				machine_room = machine_loc[5..-1]
 				machine_name = element.attributes["name"]
-				output << "\t- name:\t#{machine_name}\n\t\tfloor:\t#{machine_floor}\n\t\troom:\t#{machine_room}\n"
+				output << "-\tname:\t#{machine_name}\n\tfloor:\t#{machine_floor}\n\troom:\t#{machine_room}\n"
 			end
 		end
 	}
