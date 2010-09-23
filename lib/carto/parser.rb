@@ -2,51 +2,77 @@
 
 require 'net/http'
 require 'rexml/document'
+require 'singleton'
+
 include REXML
 
-PROFILENAME = APP_ROOT + '/hosts/inventory.xml'
-YAMLNAME = APP_ROOT + '/hosts/inventory.yaml'
-
 puts ">>> Carto library loaded. Getting information..."
-def self.get_inventory
-	unless FileTest.exist?(YAMLNAME) and File.mtime(PROFILENAME) > (Time.now - 86400)
-		puts ">>> Inventory out of date. Reacquiring data from the server..."
-		unless FileTest.exist?(PROFILENAME)
-			Net::HTTP.start('lcfg.inf.ed.ac.uk') { |http|
-				resp = http.get('/profiles/inf.ed.ac.uk/inventory/XMLInventory/profile.xml')
-				open(PROFILENAME, 'w') { |file|
-					file.write(resp.body)
-				}
-			}
-			puts ">>> Reacquisition complete."
-		end
-		return parse_me( Document.new(File.new(PROFILENAME)) )
-	end
-	puts ">>> Inventory loaded. <<<"
-	return YAMLNAME
-end
 
-def self.parse_me(invo)
-	output = Hash.new
-	invo.elements.each('inventory/node') { |element| 
-		machine_loc = element.elements["location"].text
-		unless machine_loc.nil?
-			if machine_loc[0..1] == "AT"
-				machine_floor = machine_loc[3,1]
-				machine_room = machine_loc[5..-1]
-				machine_name = element.attributes["name"]
-				output["#{machine_name}"] = {'floor' => machine_floor, 'room' => machine_room} 
-			end
-		end
-	}
-	open(YAMLNAME, 'w') {|file|
-		file.write(output.to_yaml)
-	}
-	return YAMLNAME
-end
+class Inventory
+  include Singleton
 
-def self.inventory
-	@inventory ||= get_inventory
+  XML_PATH = LIB_ROOT + '/hosts/inventory.xml'
+  YAML_PATH = LIB_ROOT + '/hosts/inventory.yaml'
+
+  def inventory
+    @inventory ||= get_inventory
+  end
+
+  private
+  def get_inventory
+    # If the YAML file already exists or the XML file is over a day old then
+    # we should grab it again.
+    unless FileTest.exist?(YAML_PATH) and File.mtime(XML_PATH) > (Time.now - 86400)
+      puts ">>> Inventory out of date. Reacquiring data from the server..."
+      
+      # Check to see if the XML file already exists.
+      unless FileTest.exist?(XML_PATH)
+        
+        # Download the file and store it at the XML_PATH.
+        Net::HTTP.start('lcfg.inf.ed.ac.uk') { |http|
+          resp = http.get('/profiles/inf.ed.ac.uk/inventory/XMLInventory/profile.xml')
+          File.open(XML_PATH, 'w') { |file|
+            file.write(resp.body)
+          }
+        }
+
+        puts ">>> Reacquisition complete."
+      end
+
+      parse_xml File.new(PROFILENAME)
+    end
+
+    load_yaml
+  end
+
+  def load_yaml
+    YAML::load_file YAML_PATH
+  end
+
+  def parse_xml xml_file
+    document = Document.new xml_file
+    output = Hash.new
+
+    document.root.each_element('//node') do |machine| 
+      location = machine.elements["location"].text
+
+      unless location.nil?
+        if location ~= /^AT/
+          floor = location[3]
+          room = location[5..-1]
+
+          name = machine.attributes["name"].text
+
+          output[name] = {:floor => floor,
+                          :room => room} 
+        end
+      end
+    end 
+
+    File.open(YAML_PATH, 'w') do |file|
+      file.write(output.to_yaml)
+    end
+
+    load_yaml
+  end
 end
-inventory
-puts ">>> Loading complete. Carto initialized and ready..."
