@@ -3,6 +3,7 @@
 require 'pathname'
 require 'net/http'
 require 'rexml/document'
+include REXML
 
 APP_ROOT = File.join(File.dirname(Pathname.new(__FILE__).realpath),'/..')
 LIB_ROOT = APP_ROOT + '/lib'
