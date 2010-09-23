@@ -13,7 +13,7 @@ YAMLNAME = APP_ROOT + '/hosts/inventory.yaml'
 
 puts ">>> Carto library loaded. Getting information..."
 def self.get_inventory
-	unless FileTest.exist?(PROFILENAME) and File.mtime(PROFILENAME) > (Time.now - 86400)
+	unless FileTest.exist?(YAMLNAME) and File.mtime(PROFILENAME) > (Time.now - 86400)
 		puts ">>> Inventory out of date. Reacquiring data from the server..."
 		Net::HTTP.start('lcfg.inf.ed.ac.uk') { |http|
 			resp = http.get('/profiles/inf.ed.ac.uk/inventory/XMLInventory/profile.xml')
