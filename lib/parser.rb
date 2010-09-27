@@ -9,7 +9,7 @@ YAMLNAME = APP_ROOT + '/hosts/inventory.yaml'
 
 puts ">>> Carto library loaded. Getting information..."
 def self.get_inventory
-	unless FileTest.exist?(YAMLNAME) and File.mtime(PROFILENAME) > (Time.now - 86400)
+	unless FileTest.exist?(YAMLNAME) and File.mtime(YAMLNAME) > (Time.now - 86400)
 		# check for net connection
 		# unless `ping -t 5 lcfg.inf.ed.ac.uk`
 			puts ">>> Inventory out of date. Reacquiring data from the server..."
