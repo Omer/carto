@@ -8,5 +8,14 @@ LIB_ROOT = APP_ROOT + '/lib'
 
 require LIB_ROOT + '/parser'
 
-@data = YAML::load_file( @inventory )
-puts @data['moose']['floor']
+File.open( @inventory ) do |yf|
+	count = 1
+	YAML.each_document( yf ) do |ydoc|
+		if count == 1
+			@names = ydoc
+			count += 1
+		else
+			@layout = ydoc
+		end
+	end
+end

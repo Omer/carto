@@ -1,9 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'carto'
+require 'bin/carto'
 
-add_machine("test", "north", "5", "A0")
-cleanup
-
-@coll.drop
+puts @layout['5']['02']

@@ -11,7 +11,7 @@ puts ">>> Carto library loaded. Getting information..."
 def self.get_inventory
 	unless FileTest.exist?(YAMLNAME) and File.mtime(PROFILENAME) > (Time.now - 86400)
 		# check for net connection
-		unless `ping -t 3 lcfg.inf.ed.ac.uk`
+		# unless `ping -t 5 lcfg.inf.ed.ac.uk`
 			puts ">>> Inventory out of date. Reacquiring data from the server..."
 			unless FileTest.exist?(PROFILENAME)
 				Net::HTTP.start('lcfg.inf.ed.ac.uk') { |http|
@@ -23,16 +23,19 @@ def self.get_inventory
 				puts ">>> Reacquisition complete."
 			end
 			return parse_me( Document.new(File.new(PROFILENAME)) )
-		else 
-			puts "No net connection. Falling back to saved file."
-		end
+		#else 
+		#	puts "No net connection. Falling back to saved file."
+		#end
 	end
 	puts ">>> Inventory loaded. <<<"
 	return YAMLNAME
 end
 
 def self.parse_me(invo)
-	output = Hash.new
+	name_map = Hash.new
+	floor_map = Hash.new
+	room_map = Hash.new
+
 	invo.elements.each('inventory/node') { |element| 
 		machine_loc = element.elements["location"].text
 		unless machine_loc.nil?
@@ -40,12 +43,18 @@ def self.parse_me(invo)
 				machine_floor = machine_loc[3,1]
 				machine_room = machine_loc[5..-1]
 				machine_name = element.attributes["name"]
-				output["#{machine_name}"] = {'floor' => machine_floor, 'room' => machine_room} 
+				name_map["#{machine_name}"] = {'floor' => machine_floor, 'room' => machine_room}
+				
+				((floor_map["#{machine_floor}"] ||= {} )["#{machine_room}"] ||= []) << machine_name
+				# { floor => {room => [list,of,names] } }
+				# floor_map['#{machine_floor}'] => {'#{machine_room}' => ['#{machine_name}']}
 			end
 		end
 	}
+
 	open(YAMLNAME, 'w') {|file|
-		file.write(output.to_yaml)
+		file.write(name_map.to_yaml)
+		file.write(floor_map.to_yaml)
 	}
 	return YAMLNAME
 end
