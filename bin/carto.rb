@@ -24,7 +24,7 @@ def get_machine(hostname)
 	unless @names[hostname].nil?
 		return @names[hostname]
 	else
-		puts ">>> ERROR \n>>> Machine not found. Check your input."
+		raise ">>> ERROR \n>>> Machine not found. Check your input."
 		Process.exit(1)
 	end
 end

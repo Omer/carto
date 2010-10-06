@@ -2,15 +2,14 @@
 
 require 'bin/carto'
 
-puts get_room_by_machine('moose')
+puts get_room_by_machine('tay')
 puts "press any key to continue..."
 t = gets.chomp
 
-machine = get_machine('aurora')
-floor_map = get_floor_by_machine('aurora')
-puts "list of all machines on floor #{machine['floor']} >>>"
-floor_map.each {|room, machines|
-	puts "Room: #{room}"
+machine = get_machine('sashko')
+room_map = get_room_by_machine('sashko')
+puts "list of all machines on floor #{machine['floor']} in room #{machine['room']} >>>"
+room_map.each {|machines|
 	machines.each {|machine| puts "\t#{machine}" }
 	}
 
