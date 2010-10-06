@@ -3,8 +3,8 @@
 require 'pathname'
 require 'yaml'
 
-APP_ROOT = File.join(File.dirname(Pathname.new(__FILE__).realpath),'/..')
-LIB_ROOT = APP_ROOT + '/lib'
+APP_ROOT ||= File.join(File.dirname(Pathname.new(__FILE__).realpath),'/..')
+LIB_ROOT ||= APP_ROOT + '/lib'
 
 require LIB_ROOT + '/parser'
 

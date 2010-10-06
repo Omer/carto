@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'bin/carto'
-require 'lib/colour'
+require 'pathname'
+
+APP_ROOT = File.join(File.dirname(Pathname.new(__FILE__).realpath),'/..')
+LIB_ROOT = APP_ROOT + '/lib'
+
+require APP_ROOT + '/bin/carto'
+require LIB_ROOT + '/colour'
 
 def roomPrint(room, out)
 	string ||= "Room is "+"#{room}\n".blue
