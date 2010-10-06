@@ -15,5 +15,11 @@ room_map.each {|machines|
 
 puts "press any key..."
 t = gets.chomp
+
+puts "get a room:"
+room = get_room('4-12')
+puts "list of all machines in room 4.12 >>>"
+puts room
+
 puts "Testing exit function"
 machine = get_machine('yourmum')
