@@ -10,19 +10,13 @@ No need for installation, you may add the `bin/carto_util` to your path if you w
 ## Options
 The following flags can be used with `carto`:
 
-* `-f`, `--floor`:
-        Find by a given floor.
-* `-r`, `--room`:
-        Find by a given floor.
-* `-l`, `--hostname`:
-        Find by a given hostname.
-* `-n`, `neighbours`:
-        Find remaining machines on the level of a given hostname.
-* `-c`, `--cache`:
-        Flush the cache.
-* `-h`, `--help`:
-        Display this screen.
+* `-f`, `--floor`: Find by a given floor.
+* `-r`, `--room`: Find by a given floor.
+* `-l`, `--hostname`: Find by a given hostname.
+* `-n`, `neighbours`: Find remaining machines on the level of a given hostname.
+* `-c`, `--cache`: Flush the cache.
+* `-h`, `--help`: Display this screen.
 
 ## Usage
 For example you could get the location of of `zonda` by:
-        `carto_util -l "zonda"`
+      carto_util -l "zonda"
