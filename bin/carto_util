@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require File.expand_path('../../lib/carto', __FILE__)
+
+options = {}
+option_parser = OptionParser.new do |opts|
+  opts.banner = "A location library for the Appleton Tower computers.\nusage: carto_util [flag] (ARG)"
+
+  opts.on("-f", "--floor", "Find by a given floor.") { |v| options[:floor] = v }
+  opts.on("-r", "--room", "Find by a given floor.") { |v| options[:room] = v }
+  opts.on("-l", "--hostname", "Find by a given hostname.") { |v| options[:host] = v }
+  opts.on("-n", "--neighbours", "Find remaining machines on the level of a given hostname.") { |v| options[:neighbours] = v }
+  opts.on("-c", "--cache", "Flush the cache.") { |v| options[:cache] = v }
+  opts.on( '-h', '--help', 'Display this screen.' ) do
+       puts opts
+       exit 0
+  end
+end
+  
+begin 
+  option_parser.parse! ARGV
+  if options.empty? or ARGV.length > 1
+    puts option_parser
+    exit 1
+  end
+rescue OptionParser::InvalidOption => error
+  puts error
+  puts option_parser
+  exit 1
+end
+
+if options[:floor] 
+  hosts = Inventory.find_by_floor(ARGV[0]) 
+  puts ">> Avaliable machines on level #{ARGV[0]}"
+  p hosts
+elsif options[:room] 
+  hosts = Inventory.find_by_room(ARGV[0]) 
+  puts ">> Avaliable machines in room #{ARGV[0]}"
+  p hosts
+elsif options[:host] 
+  host = Inventory.find_by_host(ARGV[0]) 
+  if host
+    puts "The machine #{ARGV[0]} is on level #{host['floor']}, room #{host['room']}"
+  else
+    puts ">>> ERROR:: Host not found. Check your input."
+  end
+elsif options[:neighbours] 
+  puts ">> The neighbours of #{ARGV[0]} are"
+  neighbours = Inventory.get_neighbours_for(ARGV[0])
+  if neighbours
+    p neighbours
+  else
+    puts ">>> No neighbours found."
+  end
+elsif options[:cache]
+  Parser.flush_cache
+  puts ">>> Cache flushed."
+end
